@@ -1,0 +1,33 @@
+Insert sample data 
+db.catalog.insertMany([ 
+  { item_id: "A001", name: "Classic Leather Backpack", description: "Durable leather backpack 
+with multiple compartments", tags: ["leather","backpack","travel"], price: 120, in_stock: true }, 
+  { item_id: "A002", name: "Ergonomic Office Chair", description: "Adjustable office chair with 
+lumbar support", tags: ["office","chair","comfort"], price: 280, in_stock: false }, 
+  { item_id: "A003", name: "Durable Cotton T-Shirt", description: "Soft durable t-shirt made 
+from organic cotton", tags: ["cotton","tshirt","eco-friendly"], price: 25, in_stock: true } 
+]); 
+ 
+Create test index 
+db.catalog.createIndex({ 
+  name: "text", 
+  description: "text", 
+  tags: "text" 
+}); 
+ 
+Text search using aggregate 
+db.catalog.aggregate([ 
+  { 
+    $match: { 
+      $text: { $search: "durable backpack" } 
+    } 
+  }, 
+  { 
+    $project: { 
+      _id: 0, 
+      name: 1, 
+      price: 1, 
+      score: { $meta: "textScore" } 
+    } 
+  } 
+]); 
